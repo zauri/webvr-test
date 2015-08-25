@@ -27,7 +27,7 @@ body {
 // Set this to true to enable the polyfill and split screen rendering
 // even if the device is incompatible with Cardboard (eg. desktop).
 // NOTE: This should never be checked in as true.
-CARDBOARD_DEBUG = false;
+CARDBOARD_DEBUG = true;
 </script>
 
 <!--
@@ -79,30 +79,77 @@ effect.setSize(window.innerWidth, window.innerHeight);
 // Create a VR manager helper to enter and exit VR mode.
 var manager = new WebVRManager(renderer, effect, {hideButton: false});
 
+// Create light
+var light = new THREE.PointLight( 0xffffff, 1, 100 );
+light.position.set( 5, 10, 10 );
+scene.add( light );
+
 // Create 3D objects.
-var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-var material = new THREE.MeshNormalMaterial();
+var geometry = new THREE.SphereGeometry(0.25, 50, 50);
+
+var sphereTexture = THREE.ImageUtils.loadTexture(
+  'img/planet.jpg');
+var material = new THREE.MeshBasicMaterial({
+	map: sphereTexture});
+
 var cube = new THREE.Mesh(geometry, material);
 
 // Position cube mesh
-cube.position.z = -1;
+cube.position.z = -2;
+cube.position.x = -0.5;
 
 // Add cube mesh to your three.js scene
 scene.add(cube);
 
+// Create earth.
+var geometry_earth = new THREE.SphereGeometry(0.45, 50, 50);
+
+var earthTexture = THREE.ImageUtils.loadTexture(
+  'img/earth.jpg');
+var material_earth = new THREE.MeshBasicMaterial({
+	map: earthTexture});
+
+var earth = new THREE.Mesh(geometry_earth, material_earth);
+
+// Position cube mesh
+earth.position.x = 1;
+earth.position.z = -2;
+earth.position.y = 1;
+
+// Add cube mesh to your three.js scene
+scene.add(earth);
+
+// Create second planet.
+var geometry = new THREE.SphereGeometry(0.15, 40, 40);
+
+var planetTexture = THREE.ImageUtils.loadTexture(
+  'img/planet2.png');
+var material = new THREE.MeshBasicMaterial({
+	map: planetTexture});
+
+var planet2 = new THREE.Mesh(geometry, material);
+
+// Position cube mesh
+planet2.position.z = -1.5;
+planet2.position.x = -1;
+planet2.position.y = 1;
+
+// Add cube mesh to your three.js scene
+scene.add(planet2);
+
 // Also add a repeating grid as a skybox.
-var boxWidth = 10;
+var boxWidth = 20;
 var texture = THREE.ImageUtils.loadTexture(
-  'img/box.png'
+  'img/background2.jpg'
 );
 texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set(boxWidth, boxWidth);
+texture.repeat.set(1, 1);
 
 var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
 var material = new THREE.MeshBasicMaterial({
   map: texture,
-  color: 0x333333,
+  //color: 0xffffff,
   side: THREE.BackSide
 });
 
@@ -112,7 +159,19 @@ scene.add(skybox);
 // Request animation frame loop function
 function animate() {
   // Apply rotation to cube mesh
-  cube.rotation.y += 0.01;
+  cube.rotation.y += 0.04;
+  earth.rotation.y += -0.03;
+  earth.rotation.x += 0.002;
+  planet2.rotation.x += 0.07;
+  
+// function orbit()
+//  {
+//  planet2.position.z =  9 * Math.cos(degree);
+//  planet2.position.x =  9 * Math.sin(degree);
+//  planet2.position.y = -9 * Math.cos(degree);
+//  degree+= 0.001;
+//  }
+//  orbit();
 
   // Update VR headset position and apply to camera.
   controls.update();
